@@ -9,6 +9,8 @@ namespace AngularDemo.Controllers
     [Route("api/[controller]")]
     public class SampleDataController : Controller
     {
+        private static List<WeatherForecast> InMemoryList;
+
         private static string[] Summaries = new[]
         {
             "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
@@ -16,6 +18,27 @@ namespace AngularDemo.Controllers
 
         [HttpGet("[action]")]
         public IEnumerable<WeatherForecast> WeatherForecasts()
+        {
+            if (InMemoryList == null)
+            {
+                InMemoryList = CreateList().ToList();
+            }
+
+            return InMemoryList;
+        }
+
+        [HttpPost("[action]")]
+        public void AddWeatherForecast()
+        {
+            InMemoryList.Add(new WeatherForecast
+            {
+                DateFormatted = DateTime.Now.AddMonths(2).ToString("d"),
+                TemperatureC = 500,
+                Summary = Summaries[0]
+            });
+        }
+
+        private IEnumerable<WeatherForecast> CreateList()
         {
             var rng = new Random();
             return Enumerable.Range(1, 5).Select(index => new WeatherForecast
